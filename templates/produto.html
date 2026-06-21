@@ -9,38 +9,39 @@
 </head>
 <body class="bg-gray-50 font-sans p-6">
     <nav class="bg-gray-900 text-white shadow-md mb-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-            <div class="flex items-center space-x-3">
-                <div class="bg-blue-600 p-2 rounded-lg text-white">
-                    <i class="fa-solid fa-industry text-lg"></i>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 p-2 rounded-lg text-white">
+                        <i class="fa-solid fa-industry text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-base tracking-wide block">MH Indústria</span>
+                        <span class="text-[10px] text-gray-400 block -mt-1 font-mono">PLM & Gestão v1.0</span>
+                    </div>
                 </div>
-                <div>
-                    <span class="font-bold text-base tracking-wide block">MH Indústria</span>
-                    <span class="text-[10px] text-gray-400 block -mt-1 font-mono">PLM & Gestão v1.0</span>
+                
+                <div class="flex space-x-1 sm:space-x-3 text-sm font-medium">
+                    <a href="/estrutura" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                        <i class="fa-solid fa-layer-group mr-1.5 text-blue-400"></i> <span class="hidden sm:inline">Estrutura (BOM)</span>
+                    </a>
+                    <a href="/produto" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                        <i class="fa-solid fa-box mr-1.5 text-orange-400"></i> <span class="hidden sm:inline">Produtos</span>
+                    </a>
+                    <a href="/fornecedor" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                        <i class="fa-solid fa-truck-fast mr-1.5 text-purple-400"></i> <span class="hidden sm:inline">Fornecedores</span>
+                    </a>
+                    <a href="/entrada" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                        <i class="fa-solid fa-file-invoice-dollar mr-1.5 text-emerald-400"></i> <span class="hidden sm:inline">Entrada NF</span>
+                    </a>
+                    <a href="/" class="px-3 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition flex items-center text-white border border-gray-700">
+                        <i class="fa-solid fa-arrow-left mr-1.5"></i> <span class="hidden sm:inline">Menu Principal</span>
+                    </a>
                 </div>
-            </div>
-            
-            <div class="flex space-x-1 sm:space-x-3 text-sm font-medium">
-                <a href="/estrutura" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
-                    <i class="fa-solid fa-layer-group mr-1.5 text-blue-400"></i> <span class="hidden sm:inline">Estrutura (BOM)</span>
-                </a>
-                <a href="/produto" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
-                    <i class="fa-solid fa-box mr-1.5 text-orange-400"></i> <span class="hidden sm:inline">Produtos</span>
-                </a>
-                <a href="/fornecedor" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
-                    <i class="fa-solid fa-truck-fast mr-1.5 text-purple-400"></i> <span class="hidden sm:inline">Fornecedores</span>
-                </a>
-                <a href="/entrada" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
-                    <i class="fa-solid fa-file-invoice-dollar mr-1.5 text-emerald-400"></i> <span class="hidden sm:inline">Entrada NF</span>
-                </a>
-                <a href="/" class="px-3 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition flex items-center text-white border border-gray-700">
-                    <i class="fa-solid fa-arrow-left mr-1.5"></i> <span class="hidden sm:inline">Menu Principal</span>
-                </a>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
+
     <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">
@@ -66,7 +67,7 @@
                         <option value="PA">PA - Produto Acabado (Grelhas, Portões, Caixas)</option>
                         <option value="MC">MC - Material de Consumo (Discos, EPIs, Gás)</option>
                         <option value="EM">EM - Embalagem (Plástico, Papelão)</option>
-                        <option value="SV">SV - Servico (Servico, Mao de obra)</option>
+                        <option value="SV">SV - Serviço (Serviço, Mão de obra)</option>
                     </select>
                 </div>
 
@@ -147,11 +148,12 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto isolate">
                 <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="bg-gray-100 font-semibold text-gray-600 border-b border-gray-200 text-xs uppercase">
-                            <th class="px-3 py-3 text-center w-16">Foto</th> <th class="px-3 py-3">Código</th>
+                            <th class="px-3 py-3 text-center w-16">Foto</th> 
+                            <th class="px-3 py-3">Código</th>
                             <th class="px-4 py-3">Descrição</th>
                             <th class="px-4 py-3 text-center">Tipo</th>
                             <th class="px-4 py-3 text-center">Atributos (Chapa)</th>
@@ -231,10 +233,10 @@
                 const attributesExibir = p.material && p.espessura !== null && p.espessura !== undefined ? 
                     `<span class="text-xs text-gray-500 font-medium bg-gray-100 px-2 py-0.5 rounded">${p.material} (${parseFloat(p.espessura).toFixed(2)}mm)</span>` : `-`;
                 
-                // 🛠️ AJUSTE REALIZADO AQUI: Renderização da foto em miniatura com efeito hover zoom
+                // Renderização da foto em miniatura com efeito hover zoom aprimorado
                 const miniaturaFoto = p.imagem_url ? 
                     `<div class="relative flex items-center justify-center w-10 h-10 mx-auto group">
-                        <img src="${p.imagem_url}" alt="Foto" class="w-9 h-9 object-cover rounded-full border border-gray-200 bg-white transition-all duration-200 group-hover:scale-200 group-hover:z-50 group-hover:shadow-lg">
+                        <img src="${p.imagem_url}" alt="Foto" class="w-9 h-9 object-cover rounded-full border border-gray-200 bg-white transition-all duration-200 group-hover:scale-250 group-hover:z-50 group-hover:shadow-xl group-hover:rounded-md">
                      </div>` : 
                     `<div class="flex items-center justify-center w-9 h-9 mx-auto bg-gray-100 rounded-full text-gray-300 border border-gray-100" title="Sem Imagem">
                         <i class="fa-solid fa-image text-sm"></i>
@@ -277,18 +279,22 @@
             const url = id ? `/api/produto/${id}` : '/api/produto';
             const method = id ? 'PUT' : 'POST';
 
-            const response = await fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dados)
-            });
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
 
-            if(response.ok) {
-                alert('Operação realizada com sucesso!');
-                cancelarEdicao();
-                carregarProdutos();
-            } else {
-                alert('Erro ao salvar dados.');
+                if(response.ok) {
+                    alert('Operação realizada com sucesso!');
+                    cancelarEdicao();
+                    carregarProdutos();
+                } else {
+                    alert('Erro ao salvar dados.');
+                }
+            } catch (error) {
+                console.error("Erro ao salvar produto:", error);
             }
         }
 
