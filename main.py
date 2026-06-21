@@ -41,13 +41,22 @@ app.register_blueprint(comercial_bp)
 # 4. Sincronização Automática com Proteção contra Delays de Inicialização
 with app.app_context():
     try:
-        print("🔄 Forçando limpeza em cascata para liberar tabelas travadas...")
-        # Executa o drop com CASCADE direto no motor do banco para contornar o travamento
-        db.session.execute(db.text("DROP TABLE IF EXISTS orcamentos, clientes, fornecedores, produtos, cadastro_retalhos, movimentacao_retalhos CASCADE;"))
+        print("🔄 Executando DROP TABLE com CASCADE para liberar tabelas travadas...")
+        # Lista com os nomes físicos exatos das suas tabelas no banco de dados
+        tabelas = [
+            'orcamentos', 'clientes', 'fornecedores', 'produtos', 
+            'cadastro_retalhos', 'movimentacao_retalhos', 'entradas', 'itens_entrada'
+        ]
+        
+        # Executa o drop ignorando as restrições de chave estrangeira
+        for tabela in tabelas:
+            db.session.execute(db.text(f"DROP TABLE IF EXISTS {tabela} CASCADE;"))
+        
         db.session.commit()
         
+        # Recria toda a estrutura perfeitamente alinhada com o models.py atual
         db.create_all()
-        print("✓ Sucesso: Banco limpo e recriado do zero sem travamentos!")
+        print("✓ Sucesso Absoluto: Banco limpo e tabelas recriadas do zero!")
     except Exception as e:
         print(f"⚠️ Alerta na sincronização do banco: {e}")
         print("Tentando seguir com a inicialização do servidor...")
