@@ -1,11 +1,18 @@
 from flask import Flask, render_template, request, jsonify, redirect
 from database import db
 from datetime import datetime
-import os  # <-- Importante: Necessário para ler o ambiente do Render
-import models
-from models import CadastroRetalhos, MovimentacaoRetalhos  # Puxa direto do seu arquivo de modelos oficial
+import os 
 
-# Importação dos Blueprints Modulares das APIs (Apenas uma vez de cada)
+# 1. IMPORTE TODOS OS SEUS MODELOS AQUI PARA O SQLALCHEMY CONHECÊ-LOS
+import models
+from models import CadastroRetalhos, MovimentacaoRetalhos  # Seus modelos de retalhos
+
+# ⚠️ AJUSTE AQUI: Se os modelos do comercial estiverem em outro arquivo, importe-o também!
+# Exemplo: de onde vem a tabela de pedidos ou clientes? 
+# Se estiver no mesmo arquivo: ótimo. Se estiver em outro, adicione a linha abaixo:
+# from models_comercial import Cliente, PedidoVenda 
+
+# Importação dos Blueprints Modulares das APIs
 from routes.engenharia import engenharia_bp
 from routes.comercial import comercial_bp
 
