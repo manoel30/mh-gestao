@@ -1,34 +1,17 @@
 from flask import Flask, render_template, request, jsonify, redirect
 from database import db
 from datetime import datetime
-import os 
-
-# 1. IMPORTE TODOS OS SEUS MODELOS AQUI PARA O SQLALCHEMY CONHECÊ-LOS
 import models
-from models import CadastroRetalhos, MovimentacaoRetalhos  # Seus modelos de retalhos
+from models import CadastroRetalhos, MovimentacaoRetalhos  # Puxa direto do seu arquivo de modelos oficial
 
-# ⚠️ AJUSTE AQUI: Se os modelos do comercial estiverem em outro arquivo, importe-o também!
-# Exemplo: de onde vem a tabela de pedidos ou clientes? 
-# Se estiver no mesmo arquivo: ótimo. Se estiver em outro, adicione a linha abaixo:
-# from models_comercial import Cliente, PedidoVenda 
-
-# Importação dos Blueprints Modulares das APIs
+# Importação dos Blueprints Modulares das APIs (Apenas uma vez de cada)
 from routes.engenharia import engenharia_bp
 from routes.comercial import comercial_bp
 
 app = Flask(__name__)
 
-# =============================================================================
-# 1. CONFIGURAÇÃO DINÂMICA DO BANCO DE DADOS (LOCAL VS PRODUCTION)
-# =============================================================================
-# O Render fornece a URL na variável DATABASE_URL. Se não existir, usa o seu localhost.
-db_uri = os.environ.get('DATABASE_URL', 'postgresql://postgres:1234@localhost:5432/PLM_GESTA_1')
-
-# Segurança para o SQLAlchemy 2.0: o Render costuma enviar "postgres://", mas o driver exige "postgresql://"
-if db_uri and db_uri.startswith("postgres://"):
-    db_uri = db_uri.replace("postgres://", "postgresql://", 1)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+# 1. Configurações do Banco de Dados (Devem vir ANTES do init_app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://banco_gestao_mh_user:7nDZqiN920jZKUiyssC5O3JtG9azi0aM@dpg-d8b35b4m0tmc73d5ovog-a/bd-gestao'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # 2. Inicializa o Banco conectado ao App
@@ -38,28 +21,11 @@ db.init_app(app)
 app.register_blueprint(engenharia_bp)
 app.register_blueprint(comercial_bp)
 
-# 4. Sincronização Automática com Proteção contra Delays de Inicialização
+# 4. Sincronização Automática de Tabelas com o Postgres
 with app.app_context():
-    try:
-        print("🔄 Executando DROP TABLE com CASCADE para liberar tabelas travadas...")
-        # Lista com os nomes físicos exatos das suas tabelas no banco de dados
-        tabelas = [
-            'orcamentos', 'clientes', 'fornecedores', 'produtos', 
-            'cadastro_retalhos', 'movimentacao_retalhos', 'entradas', 'itens_entrada'
-        ]
-        
-        # Executa o drop ignorando as restrições de chave estrangeira
-        for tabela in tabelas:
-            db.session.execute(db.text(f"DROP TABLE IF EXISTS {tabela} CASCADE;"))
-        
-        db.session.commit()
-        
-        # Recria toda a estrutura perfeitamente alinhada com o models.py atual
-        db.create_all()
-        print("✓ Sucesso Absoluto: Banco limpo e tabelas recriadas do zero!")
-    except Exception as e:
-        print(f"⚠️ Alerta na sincronização do banco: {e}")
-        print("Tentando seguir com a inicialização do servidor...")
+    db.create_all()
+    print("✓ Arquitetura Modular Ativa: Banco e Tabelas de Venda/Estoque/Retalhos sincronizados!")
+
 # =============================================================================
 # ROTAS DAS TELAS HTML (INTERFACE VISUAL)
 # =============================================================================
