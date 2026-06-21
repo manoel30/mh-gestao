@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, redirect
 from database import db
 from datetime import datetime
+import os  # <-- Importante: Necessário para ler o ambiente do Render
 import models
 from models import CadastroRetalhos, MovimentacaoRetalhos  # Puxa direto do seu arquivo de modelos oficial
 
@@ -10,8 +11,17 @@ from routes.comercial import comercial_bp
 
 app = Flask(__name__)
 
-# 1. Configurações do Banco de Dados (Devem vir ANTES do init_app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/PLM_GESTA_1'
+# =============================================================================
+# 1. CONFIGURAÇÃO DINÂMICA DO BANCO DE DADOS (LOCAL VS PRODUCTION)
+# =============================================================================
+# O Render fornece a URL na variável DATABASE_URL. Se não existir, usa o seu localhost.
+db_uri = os.environ.get('DATABASE_URL', 'postgresql://postgres:1234@localhost:5432/PLM_GESTA_1')
+
+# Segurança para o SQLAlchemy 2.0: o Render costuma enviar "postgres://", mas o driver exige "postgresql://"
+if db_uri and db_uri.startswith("postgres://"):
+    db_uri = db_uri.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # 2. Inicializa o Banco conectado ao App
@@ -21,10 +31,14 @@ db.init_app(app)
 app.register_blueprint(engenharia_bp)
 app.register_blueprint(comercial_bp)
 
-# 4. Sincronização Automática de Tabelas com o Postgres
+# 4. Sincronização Automática com Proteção contra Delays de Inicialização
 with app.app_context():
-    db.create_all()
-    print("✓ Arquitetura Modular Ativa: Banco e Tabelas de Venda/Estoque/Retalhos sincronizados!")
+    try:
+        db.create_all()
+        print("✓ Arquitetura Modular Ativa: Banco e Tabelas de Venda/Estoque/Retalhos sincronizados!")
+    except Exception as e:
+        print(f"⚠️ Alerta/Atraso na sincronização do banco de dados: {e}")
+        print("Tentando continuar com a inicialização do servidor...")
 
 # =============================================================================
 # ROTAS DAS TELAS HTML (INTERFACE VISUAL)
