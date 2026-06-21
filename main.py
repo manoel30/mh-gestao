@@ -41,7 +41,7 @@ app.register_blueprint(comercial_bp)
 # 4. Sincronização Automática com Proteção contra Delays de Inicialização
 with app.app_context():
     try:
-        db.create_all()
+       # db.create_all()
         print("✓ Arquitetura Modular Ativa: Banco e Tabelas de Venda/Estoque/Retalhos sincronizados!")
     except Exception as e:
         print(f"⚠️ Alerta/Atraso na sincronização do banco de dados: {e}")
