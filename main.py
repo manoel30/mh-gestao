@@ -128,7 +128,7 @@ def deletar_retalho():
         return jsonify({"status": "sucesso"})
     return jsonify({"status": "erro", "message": "Não encontrado"}), 404
 
-# --- ROTAS DE INTERFACE DO SEU PROJETO ---
+# --- ROTAS ANTIGAS DO SEU PROJETO ---
 
 @app.route('/produto')
 def tela_produto(): 
