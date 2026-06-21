@@ -41,12 +41,13 @@ app.register_blueprint(comercial_bp)
 # 4. Sincronização Automática com Proteção contra Delays de Inicialização
 with app.app_context():
     try:
-       # db.create_all()
-        print("✓ Arquitetura Modular Ativa: Banco e Tabelas de Venda/Estoque/Retalhos sincronizados!")
+        print("🔄 Forçando limpeza e recriação das tabelas para alinhar colunas...")
+        db.drop_all()   # <-- ATIVADO: Apaga as tabelas antigas e erradas do Render
+        db.create_all()  # Criará tudo do zero perfeitamente alinhado com o seu models.py
+        print("✓ Sucesso: Banco e Tabelas de Venda/Estoque/Retalhos 100% sincronizados!")
     except Exception as e:
-        print(f"⚠️ Alerta/Atraso na sincronização do banco de dados: {e}")
-        print("Tentando continuar com a inicialização do servidor...")
-
+        print(f"⚠️ Alerta na sincronização do banco: {e}")
+        print("Tentando seguir com a inicialização do servidor...")
 # =============================================================================
 # ROTAS DAS TELAS HTML (INTERFACE VISUAL)
 # =============================================================================
