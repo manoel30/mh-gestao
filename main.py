@@ -11,7 +11,7 @@ from routes.comercial import comercial_bp
 app = Flask(__name__)
 
 # 1. Configurações do Banco de Dados (Devem vir ANTES do init_app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://banco_gestao_mh_user:7nDZqiN920jZKUiyssC5O3JtG9azi0aM@dpg-d8b35b4m0tmc73d5ovog-a.virginia-postgres.render.com:5432/bd-gestao'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/PLM_GESTA_1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # 2. Inicializa o Banco conectado ao App
@@ -128,7 +128,7 @@ def deletar_retalho():
         return jsonify({"status": "sucesso"})
     return jsonify({"status": "erro", "message": "Não encontrado"}), 404
 
-# --- ROTAS ANTIGAS DO SEU PROJETO ---
+# --- ROTAS DE INTERFACE DO SEU PROJETO ---
 
 @app.route('/produto')
 def tela_produto(): 
