@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MH Indústria - Painel Comercial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .navbar-custom { background-color: #1A365D; }
+        .nav-tabs .nav-link.active {
+            background-color: #1A365D;
+            color: white !important;
+            border-color: #1A365D;
+        }
+        .nav-tabs .nav-link { color: #1A365D; font-weight: bold; }
+        .product-card img {
+            height: 180px;
+            object-fit: cover;
+            background-color: #eaeaea;
+        }
+        /* Botão Voltar integrado à Barra Superior */
+        .btn-voltar-topo {
+            background-color: #4a5568;
+            color: white;
+            border: 1px solid #718096;
+            padding: 5px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .btn-voltar-topo:hover {
+            background-color: #2d3748;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark navbar-custom shadow-sm mb-4">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <span class="navbar-brand mb-0 h1">MH INDÚSTRIA E COMÉRCIO - Painel Comercial</span>
+            <a href="/" class="btn-voltar-topo">⬅ Voltar ao Menu Principal</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <ul class="nav nav-tabs mb-4" id="comercialTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if not busca_atual %}active{% endif %}" id="clientes-tab" data-bs-toggle="tab" data-bs-target="#clientes-pane" type="button" role="tab">
+                    👥 Carteira de Clientes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if busca_atual %}active{% endif %}" id="catalogo-tab" data-bs-toggle="tab" data-bs-target="#catalogo-pane" type="button" role="tab">
+                    📦 Catálogo de Produtos
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="comercialTabsContent">
+            
+            <div class="tab-pane fade {% if not busca_atual %}show active{% endif %}" id="clientes-pane" role="tabpanel" aria-labelledby="clientes-tab">
+                <div class="card shadow-sm p-4 mb-4">
+                    <h4 class="text-primary mb-3">Cadastrar Novo Cliente (Lojas / Distribuidores)</h4>
+                    <form id="formCadastroCliente" action="/api/cliente" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Razão Social:</label>
+                                <input type="text" class="form-control" name="razao_social" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">CNPJ / CPF:</label>
+                                <input type="text" class="form-control" name="cnpj_cpf" placeholder="00.000.000/0000-00" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Nome Fantasia:</label>
+                                <input type="text" class="form-control" name="nome_fantasia">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Telefone:</label>
+                                <input type="text" class="form-control" name="telefone" placeholder="(75) 99999-9999">
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold">Endereço da Loja:</label>
+                                <input type="text" class="form-control" name="endereco" placeholder="Rua, Número, Bairro">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Cidade:</label>
+                                <input type="text" class="form-control" name="cidade" value="Feira de Santana">
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Latitude:</label>
+                                <input type="number" step="any" class="form-control" id="lat" name="latitude" placeholder="Ex: -12.2574">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Longitude:</label>
+                                <input type="number" step="any" class="form-control" id="lng" name="longitude" placeholder="Ex: -38.9598">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="button" class="btn btn-success w-100" onclick="capturarGPS()">
+                                    📍 Capturar Localização Atual
+                                </button>
+                            </div>
+                            
+                            <div class="col-md-12 mt-4">
+                                <button type="submit" class="btn btn-primary px-5 fw-bold">Salvar Cliente na Carteira</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card shadow-sm p-4">
+                    <h4 class="text-secondary mb-3">Sua Carteira de Clientes</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Razão Social / Nome Fantasia</th>
+                                    <th>CNPJ/CPF</th>
+                                    <th>Telefone</th>
+                                    <th>Cidade</th>
+                                    <th>Localização</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cliente in clientes %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ cliente.razao_social }}</strong><br>
+                                        <small class="text-muted">{{ cliente.nome_fantasia or cliente.razao_social }}</small>
+                                    </td>
+                                    <td>{{ cliente.cnpj_cpf }}</td>
+                                    <td>{{ cliente.telefone or 'Não informado' }}</td>
+                                    <td>{{ cliente.cidade }}</td>
+                                    <td>
+                                        {% if cliente.latitude and cliente.longitude %}
+                                            <a href="http://maps.google.com/?q={{ cliente.latitude }},{{ cliente.longitude }}" 
+                                               target="_blank" class="btn btn-sm btn-outline-info">
+                                                🗺️ Ver no Mapa
+                                            </a>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Sem GPS</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <button class="btn btn-sm btn-warning" onclick="abrirEdicao('{{ cliente.id }}', '{{ cliente.razao_social }}', '{{ cliente.telefone }}')">
+                                                Editar
+                                            </button>
+                                            <form action="/api/cliente/{{ cliente.id }}/deletar" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este cliente?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">Nenhum cliente cadastrado na sua carteira ainda.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade {% if busca_atual %}show active{% endif %}" id="catalogo-pane" role="tabpanel" aria-labelledby="catalogo-tab">
+                <div class="row">
+                    <div class="col-lg-8 mb-4">
+                        <div class="card shadow-sm p-4">
+                            <h4 class="text-secondary mb-3">Catálogo de Vendas - Peças Padronizadas</h4>
+                            
+                            <form action="/comercial" method="GET" class="d-flex mb-4">
+                                <input type="text" name="busca" class="form-control me-2" placeholder="Digite a descrição do produto (Ex: GRELHA)..." value="{{ busca_atual or '' }}">
+                                <button type="submit" class="btn btn-primary me-2">Buscar</button>
+                                <a href="/comercial" class="btn btn-secondary">Limpar</a>
+                            </form>
+                            
+                            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+                                {% for produto in produtos %}
+                                <div class="col">
+                                    <div class="card h-100 product-card shadow-sm border-0 position-relative">
+                                        <span class="position-absolute top-0 end-0 badge bg-primary m-2">{{ produto.unidade_consumo }}</span>
+                                        
+                                        {% if produto.imagem_url %}
+                                            <img src="{{ produto.imagem_url }}" class="card-img-top rounded-top" alt="{{ produto.descricao }}">
+                                        {% else %}
+                                            <div class="d-flex align-items-center justify-content-center bg-light border-bottom text-muted" style="height: 150px;">
+                                                <span class="text-center px-2">📷 Foto em Breve<br><small style="font-size: 11px;">Inox MH Indústria</small></span>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <div class="card-body d-flex flex-column justify-content-between">
+                                            <div>
+                                                <small class="text-uppercase text-muted fw-bold" style="font-size: 10px;">Cód: {{ produto.codigo_interno }}</small>
+                                                <h6 class="card-title text-dark mt-1 mb-2" style="font-size: 14px;">{{ produto.descricao }}</h6>
+                                            </div>
+                                            
+                                            <div class="mt-2">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span class="text-muted small">Preço:</span>
+                                                    <span class="text-success fw-bold">R$ {{ "%.2f"|format(produto.preco_tabela) }}</span>
+                                                </div>
+                                                
+                                                <button class="btn btn-outline-primary btn-sm w-100" 
+                                                        onclick="adicionarAoCarrinho('{{ produto.id }}', '{{ produto.descricao }}', '{{ produto.preco_tabela }}')">
+                                                    ➕ Adicionar ao Pedido
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="col-12 text-center text-muted py-5">
+                                    <p>Nenhum produto encontrado para esta busca.</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm p-4 position-sticky" style="top: 20px;">
+                            <h4 class="text-primary mb-3">📝 Rascunho do Pedido</h4>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Selecione o Cliente:</label>
+                                <select id="pedido_cliente_id" class="form-select">
+                                    <option value="">-- Escolha um cliente da carteira --</option>
+                                    {% for cliente in clientes %}
+                                        <option value="{{ cliente.id }}">{{ cliente.razao_social }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Prazo de Pagamento:</label>
+                                <select id="pedido_prazo" class="form-select" onchange="recalcularTotais()">
+                                    <option value="A_VISTA">À Vista (5% Desconto)</option>
+                                    <option value="30_DIAS">30 Dias (3% acima de R$5k)</option>
+                                    <option value="30_60_DIAS">30/60 Dias (Preço Cheio)</option>
+                                </select>
+                            </div>
+
+                            <hr>
+                            <div id="itens_carrinho" class="mb-3" style="max-height: 200px; overflow-y: auto;">
+                                <p class="text-muted text-center my-3" id="carrinho_vazio">Nenhum item selecionado.</p>
+                            </div>
+                            <hr>
+
+                            <div class="bg-light p-3 rounded mb-3" style="font-size: 14px;">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Subtotal Bruto:</span>
+                                    <span id="total_bruto">R$ 0,00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1 text-danger">
+                                    <span>Desconto/Acréscimo:</span>
+                                    <span id="total_desconto">R$ 0,00</span>
+                                </div>
+                                <div class="d-flex justify-content-between fw-bold text-success fs-5 pt-2 border-top">
+                                    <span>Valor Líquido:</span>
+                                    <span id="total_liquido">R$ 0,00</span>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-success w-100 btn-lg fw-bold" onclick="finalizarPedido()">
+                                🚀 Fechar e Enviar Pedido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    let carrinho = [];
+
+    function capturarGPS() {
+        if (navigator.geolocation) {
+            document.getElementById('lat').placeholder = "Localizando...";
+            document.getElementById('lng').placeholder = "Localizando...";
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    document.getElementById('lat').value = position.coords.latitude.toFixed(8);
+                    document.getElementById('lng').value = position.coords.longitude.toFixed(8);
+                },
+                function (error) {
+                    alert("Erro ao capturar o GPS. Ative a localização no celular.");
+                    document.getElementById('lat').placeholder = "Erro";
+                    document.getElementById('lng').placeholder = "Erro";
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        } else {
+            alert("Navegador não suporta geolocalização.");
+        }
+    }
+
+    function abrirEdicao(id, razao, telefone) {
+        let novoTelefone = prompt("Editar Telefone de " + razao + ":", telefone);
+        if (novoTelefone !== null) {
+            fetch('/api/cliente/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ telefone: novoTelefone })
+            }).then(res => {
+                if(res.ok) { window.location.reload(); }
+            });
+        }
+    }
+
+    function adicionarAoCarrinho(id, descricao, precoTabela) {
+        let itemExistente = carrinho.find(item => item.produto_id === id);
+        if (itemExistente) {
+            itemExistente.quantidade += 1;
+        } else {
+            carrinho.push({
+                produto_id: id,
+                descricao: descricao,
+                preco_tabela: parseFloat(precoTabela),
+                quantidade: 1
+            });
+        }
+        renderizarCarrinho();
+    }
+
+    function alterarQuantidade(id, delta) {
+        let item = carrinho.find(item => item.produto_id === id);
+        if (item) {
+            item.quantidade += delta;
+            if (item.quantidade <= 0) {
+                carrinho = carrinho.filter(i => i.produto_id !== id);
+            }
+        }
+        renderizarCarrinho();
+    }
+
+    function renderizarCarrinho() {
+        const container = document.getElementById('itens_carrinho');
+        container.innerHTML = '';
+
+        if (carrinho.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center my-3" id="carrinho_vazio">Nenhum item selecionado.</p>';
+            recalcularTotais();
+            return;
+        }
+
+        carrinho.forEach(item => {
+            let div = document.createElement('div');
+            div.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border-bottom bg-white rounded shadow-sm';
+            div.innerHTML = `
+                <div style="max-width: 60%;">
+                    <small class="fw-bold d-block text-truncate">${item.descricao}</small>
+                    <small class="text-muted">R$ ${item.preco_tabela.toFixed(2)} / un</small>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-secondary py-0 px-2" onclick="alterarQuantidade('${item.produto_id}', -1)">-</button>
+                    <span class="fw-bold">${item.quantidade}</span>
+                    <button class="btn btn-sm btn-secondary py-0 px-2" onclick="alterarQuantidade('${item.produto_id}', 1)">+</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        recalcularTotais();
+    }
+
+    function recalcularTotais() {
+        let valorBruto = 0;
+        carrinho.forEach(item => {
+            valorBruto += item.quantidade * item.preco_tabela;
+        });
+
+        let prazo = document.getElementById('pedido_prazo').value;
+        let percentualDesconto = 0;
+
+        if (prazo === 'A_VISTA') {
+            percentualDesconto = 0.05;
+        } else if (prazo === '30_DIAS' && valorBruto >= 5000.00) {
+            percentualDesconto = 0.03;
+        } else if (prazo === '30_60_DIAS' && valorBruto >= 10000.00) {
+            percentualDesconto = 0.00;
+        } else if (valorBruto < 3000.00 && (prazo === '30_DIAS' || prazo === '30_60_DIAS')) {
+            percentualDesconto = -0.02; // Acréscimo
+        }
+
+        let valorDesconto = valorBruto * percentualDesconto;
+        let valorLiquido = valorBruto - valorDesconto;
+
+        document.getElementById('total_bruto').innerText = `R$ ${valorBruto.toFixed(2).replace('.', ',')}`;
+        document.getElementById('total_desconto').innerText = `${percentualDesconto >= 0 ? '-' : '+'} R$ ${Math.abs(valorDesconto).toFixed(2).replace('.', ',')}`;
+        document.getElementById('total_liquido').innerText = `R$ ${valorLiquido.toFixed(2).replace('.', ',')}`;
+    }
+
+    function finalizarPedido() {
+        let clienteId = document.getElementById('pedido_cliente_id').value;
+        let prazo = document.getElementById('pedido_prazo').value;
+
+        if (!clienteId) {
+            alert("Por favor, selecione o cliente para o qual deseja gerar este pedido.");
+            return;
+        }
+        if (carrinho.length === 0) {
+            alert("O seu carrinho está vazio! Adicione produtos antes de salvar.");
+            return;
+        }
+
+        let payload = {
+            cliente_id: clienteId,
+            prazo_pagamento: prazo,
+            itens: carrinho
+        };
+
+        fetch('/api/comercial/pedido', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.pedido_id) {
+                alert(`Sucesso! Pedido Nº ${data.pedido_id} gerado com sucesso!\nValor Líquido: R$ ${data.valor_final.toFixed(2)}`);
+                carrinho = [];
+                renderizarCarrinho();
+                document.getElementById('pedido_cliente_id').value = "";
+            } else {
+                alert("Erro ao processar pedido: " + data.error);
+            }
+        })
+        .catch(err => {
+            alert("Erro crítico de rede ao salvar pedido.");
+            console.error(err);
+        });
+    }
+    </script>
+</body>
+</html>

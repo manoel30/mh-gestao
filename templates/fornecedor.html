@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Fornecedores - MH Indústria</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans p-6">
+    <nav class="bg-gray-900 text-white shadow-md mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <i class="fa-solid fa-industry text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-base tracking-wide block">MH Indústria</span>
+                    <span class="text-[10px] text-gray-400 block -mt-1 font-mono">PLM & Gestão v1.0</span>
+                </div>
+            </div>
+            
+            <div class="flex space-x-1 sm:space-x-3 text-sm font-medium">
+                <a href="/estrutura" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-layer-group mr-1.5 text-blue-400"></i> <span class="hidden sm:inline">Structure (BOM)</span>
+                </a>
+                <a href="/produto" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-box mr-1.5 text-orange-400"></i> <span class="hidden sm:inline">Produtos</span>
+                </a>
+                <a href="/fornecedor" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-truck-fast mr-1.5 text-purple-400"></i> <span class="hidden sm:inline">Fornecedores</span>
+                </a>
+                <a href="/entrada" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-file-invoice-dollar mr-1.5 text-emerald-400"></i> <span class="hidden sm:inline">Entrada NF</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">
+            <h2 id="titulo-form" class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fa-solid fa-truck text-blue-600 mr-2"></i> Cadastrar Fornecedor
+            </h2>
+            
+            <form id="form-fornecedor" class="space-y-4">
+                <input type="hidden" id="fornecedor_id">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Razão Social</label>
+                    <input type="text" id="razao_social" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">CNPJ</label>
+                    <input type="text" id="cnpj" required class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Telefone</label>
+                    <input type="text" id="telefone" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">E-mail</label>
+                    <input type="email" id="email" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+
+                <div class="flex space-x-2">
+                    <button type="button" onclick="salvarFornecedor()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-sm transition cursor-pointer">Gravar</button>
+                    <button type="button" onclick="cancelarEdicao()" id="btn-cancelar" class="hidden flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 rounded-lg text-sm transition cursor-pointer">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h2 class="text-lg font-bold text-gray-800">Fornecedores Homologados</h2>
+                <div class="relative w-full sm:w-64">
+                    <input type="text" id="filtro-busca" oninput="carregarFornecedores()" placeholder="Filtrar por nome ou CNPJ..." class="w-full bg-gray-50 border border-gray-300 rounded-lg pl-9 pr-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-gray-100 font-semibold text-gray-600 border-b border-gray-200 text-xs uppercase">
+                            <th class="px-4 py-3">Razão Social</th>
+                            <th class="px-4 py-3">CNPJ</th>
+                            <th class="px-4 py-3">Contato</th>
+                            <th class="px-4 py-3 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-fornecedores" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let todosFornecedores = [];
+
+        async function carregarFornecedores() {
+            try {
+                const busca = document.getElementById('filtro-busca').value;
+                const res = await fetch(`/api/fornecedores?busca=${encodeURIComponent(busca)}`);
+                todosFornecedores = await res.json();
+                
+                const tbody = document.getElementById('tabela-fornecedores');
+                tbody.innerHTML = "";
+
+                todosFornecedores.forEach(f => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-50 border-b border-gray-100 text-gray-700 text-sm";
+                    
+                    tr.innerHTML = `
+                        <td class="px-4 py-3 font-semibold text-gray-700">${f.razao_social || ''}</td>
+                        <td class="px-4 py-3 text-gray-500 text-xs font-mono">${f.cnpj || ''}</td>
+                        <td class="px-4 py-3 text-gray-600 text-xs">
+                            ${f.telefone || ''}${f.telefone && f.email ? '<br>' : ''}
+                            <span class="text-gray-400">${f.email || ''}</span>
+                        </td>
+                        <td class="px-4 py-3 text-center space-x-2">
+                            <button type="button" onclick="prepararEdicao(${f.id})" class="text-blue-600 hover:text-blue-800 cursor-pointer"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button type="button" onclick="deletarFornecedor(${f.id})" class="text-red-600 hover:text-red-800 cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar fornecedores:", error);
+            }
+        }
+
+        async function salvarFornecedor() {
+            const id = document.getElementById('fornecedor_id').value;
+            const dados = {
+                razao_social: document.getElementById('razao_social').value.trim(),
+                cnpj: document.getElementById('cnpj').value.trim(),
+                telefone: document.getElementById('telefone').value.trim(),
+                email: document.getElementById('email').value.trim()
+            };
+
+            if (!dados.razao_social || !dados.cnpj) {
+                alert('Razão Social e CNPJ são campos obrigatórios.');
+                return;
+            }
+
+            const url = id ? `/api/fornecedor/${id}` : '/api/fornecedor';
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+
+                if (response.ok) {
+                    alert('Fornecedor gravado com sucesso!');
+                    cancelarEdicao();
+                    carregarFornecedores();
+                } else {
+                    const erroServidor = await response.json();
+                    alert(`Erro: ${erroServidor.error || 'Erro ao salvar fornecedor.'}`);
+                }
+            } catch (error) {
+                console.error("Erro na comunicação com o servidor:", error);
+                alert("Não foi possível conectar ao servidor. Verifique o terminal do Python.");
+            }
+        }
+
+        function prepararEdicao(id) {
+            const f = todosFornecedores.find(item => item.id === id);
+            if (!f) return;
+
+            document.getElementById('fornecedor_id').value = f.id;
+            document.getElementById('razao_social').value = f.razao_social || '';
+            document.getElementById('cnpj').value = f.cnpj || '';
+            document.getElementById('telefone').value = f.telefone || '';
+            document.getElementById('email').value = f.email || '';
+            
+            document.getElementById('titulo-form').innerHTML = '<i class="fa-solid fa-pen text-orange-500 mr-2"></i> Editar Fornecedor';
+            document.getElementById('btn-cancelar').classList.remove('hidden');
+        }
+
+        function cancelarEdicao() {
+            document.getElementById('form-fornecedor').reset();
+            document.getElementById('fornecedor_id').value = "";
+            document.getElementById('titulo-form').innerHTML = '<i class="fa-solid fa-truck text-blue-600 mr-2"></i> Cadastrar Fornecedor';
+            document.getElementById('btn-cancelar').classList.add('hidden');
+        }
+
+        async function deletarFornecedor(id) {
+            if(confirm('Deseja excluir este fornecedor da base de dados?')) {
+                try {
+                    const res = await fetch(`/api/fornecedor/${id}`, { method: 'DELETE' });
+                    if(res.ok) {
+                        carregarFornecedores();
+                    } else {
+                        const erroServidor = await res.json();
+                        alert(`Erro: ${erroServidor.error || 'Erro ao excluir fornecedor.'}`);
+                    }
+                } catch (error) {
+                    console.error("Erro ao deletar fornecedor:", error);
+                }
+            }
+        }
+
+        window.onload = carregarFornecedores;
+    </script>
+</body>
+</html>

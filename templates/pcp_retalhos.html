@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCP - Controle de Retalhos | MH Indústria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; }
+        .navbar-pcp { background-color: #0F172A; }
+        .card-indicador { border-left: 5px solid; }
+        .badge-esc { background-color: #6C757D; color: white; }
+        .badge-bri { background-color: #0D6EFD; color: white; }
+        .badge-fos { background-color: #198754; color: white; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark navbar-pcp shadow-sm mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">⚙️ MH INDÚSTRIA - Painel PCP (Módulo de Retalhos)</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card card-indicador shadow-sm p-3 bg-white" style="border-left-color: #6C757D;">
+                    <small class="text-muted fw-bold text-uppercase">Saldo Escovado (ESC)</small>
+                    <h3 class="text-secondary mt-1" id="saldo_escovado">{{ saldo_escovado }} Peças</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-indicador shadow-sm p-3 bg-white" style="border-left-color: #0D6EFD;">
+                    <small class="text-muted fw-bold text-uppercase">Saldo Brilhante (BRI)</small>
+                    <h3 class="text-primary mt-1" id="saldo_brilhante">{{ saldo_brilhante }} Peças</h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-indicador shadow-sm p-3 bg-white" style="border-left-color: #198754;">
+                    <small class="text-muted fw-bold text-uppercase">Saldo Fosco (FOS)</small>
+                    <h3 class="text-success mt-1" id="saldo_fosco">{{ saldo_fosco }} Peças</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm p-4 bg-white">
+                    <h4 class="text-dark mb-3 border-bottom pb-2">🔄 Movimentar Retalho</h4>
+                    
+                    <form id="formMovimentacao" action="/api/pcp/retalhos" method="POST" onsubmit="gerarPreviewCodigo()">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tipo de Operação</label>
+                            <select class="form-select" name="tipo_movimentacao" id="tipo_mov">
+                                <option value="ENTRADA">🟢 ENTRADA (Sobrou do Corte)</option>
+                                <option value="SAIDA">🔴 SAÍDA (Vai para a Máquina)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Material</label>
+                            <select class="form-select" name="material" id="mat" onchange="gerarPreviewCodigo()">
+                                <option value="IX304">Inox 304</option>
+                                <option value="IX430">Inox 430</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Espessura (mm)</label>
+                                <input type="number" step="0.01" class="form-control" name="espessura" id="esp" placeholder="0.80" value="0.80" oninput="gerarPreviewCodigo()">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Acabamento</label>
+                                <select class="form-select" name="acabamento" id="acab" onchange="gerarPreviewCodigo()">
+                                    <option value="ESC">Escovado</option>
+                                    <option value="BRI">Brilhante</option>
+                                    <option value="FOS">Fosco</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Largura (mm)</label>
+                                <input type="number" class="form-control" name="largura" id="larg" placeholder="200" oninput="gerarPreviewCodigo()" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Comprimento (mm)</label>
+                                <input type="number" class="form-control" name="comprimento" id="comp" placeholder="500" oninput="gerarPreviewCodigo()" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Quantidade de Tiras</label>
+                            <input type="number" class="form-control" name="quantidade" value="1" min="1" required>
+                        </div>
+
+                        <div class="mb-3 bg-light p-3 rounded border text-center">
+                            <label class="form-label text-muted d-block mb-1 fw-bold">Código Inteligente Gerado:</label>
+                            <input type="text" name="codigo_retalho" id="codigo_final" 
+                                   class="form-control text-center fs-5 fw-bold text-primary bg-white" 
+                                   readonly style="pointer-events: none; border: 2px solid #0d6efd;">
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">Lançar no Estoque</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card shadow-sm p-4 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <h4 class="text-dark m-0">📦 Inventário de Retalhos Disponíveis</h4>
+                        <input type="text" id="filtroTabela" class="form-control w-50" placeholder="🔍 Filtrar por código ou medidas...">
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle" id="tabelaRetalhos">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Código Inteligente</th>
+                                    <th>Medidas</th>
+                                    <th>Espessura</th>
+                                    <th>Acabamento</th>
+                                    <th class="text-center">Saldo</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for retalho in retalhos %}
+                                <tr>
+                                    <td><code class="fw-bold text-dark">{{ retalho.codigo_retalho }}</code></td>
+                                    <td>{{ retalho.largura }} x {{ retalho.comprimento }} mm</td>
+                                    <td>{{ retalho.espessura }} mm</td>
+                                    <td>
+                                        {% if retalho.acabamento == 'ESC' %}
+                                            <span class="badge badge-esc">Escovado</span>
+                                        {% elif retalho.acabamento == 'BRI' %}
+                                            <span class="badge badge-bri">Brilhante</span>
+                                        {% else %}
+                                            <span class="badge badge-fos">Fosco</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center fw-bold text-success fs-5">{{ retalho.quantidade_saldo }}</td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <button class="btn btn-sm btn-warning" onclick="editarSaldo('{{ retalho.codigo_retalho }}', {{ retalho.quantidade_saldo }})">Editar</button>
+                                            <button class="btn btn-sm btn-danger" onclick="excluirRetalho('{{ retalho.codigo_retalho }}')">Excluir</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">Nenhum retalho disponível no estoque no momento.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Gera o código automaticamente ao preencher o formulário
+        function gerarPreviewCodigo() {
+            let material = document.getElementById('mat').value;
+            let espessuraRaw = parseFloat(document.getElementById('esp').value || 0);
+            let espessuraFormatada = String(Math.round(espessuraRaw * 100)).padStart(3, '0');
+            let largura = document.getElementById('larg').value || '0';
+            let comprimento = document.getElementById('comp').value || '0';
+            let acabamento = document.getElementById('acab').value;
+
+            let codigoFinal = `${material}-${espessuraFormatada}-${largura}X${comprimento}-${acabamento}`;
+            
+            document.getElementById('codigo_final').value = codigoFinal;
+        }
+
+        // Requisição para editar saldo direto na linha
+        function editarSaldo(codigo, saldoAtual) {
+            let novoSaldo = prompt(`Alterar saldo do código ${codigo}:`, saldoAtual);
+            if (novoSaldo !== null && !isNaN(novoSaldo)) {
+                fetch('/api/pcp/retalhos/editar', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo: codigo, novo_saldo: parseInt(novoSaldo) })
+                }).then(res => {
+                    if(res.ok) { window.location.reload(); }
+                });
+            }
+        }
+
+        // Requisição para excluir o retalho
+        function excluirRetalho(codigo) {
+            if (confirm(`Tem certeza que deseja remover o retalho ${codigo} do inventário?`)) {
+                fetch('/api/pcp/retalhos/deletar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo: codigo })
+                }).then(res => {
+                    if(res.ok) { window.location.reload(); }
+                });
+            }
+        }
+
+        // Filtro de busca rápida na tabela - TOTALMENTE CORRIGIDO
+        document.getElementById('filtroTabela').addEventListener('keyup', function() {
+            let valor = this.value.toLowerCase();
+            let linhas = document.querySelectorAll('#tabelaRetalhos tbody tr');
+            
+            linhas.forEach(linha => {
+                let texto = linha.innerText.toLowerCase();
+                linha.style.display = texto.includes(valor) ? '' : 'none';
+            });
+        });
+
+        // Força a execução correta assim que a página termina de carregar
+        document.addEventListener("DOMContentLoaded", function() {
+            gerarPreviewCodigo();
+        });
+    </script>
+</body>
+</html>

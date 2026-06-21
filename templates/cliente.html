@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>MH Indústria - Cadastro de Clientes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f6f9; }
+        .container { max-width: 800px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { color: #1a365d; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #cbd5e0; border-radius: 4px; }
+        button { background-color: #2b6cb0; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #1a365d; }
+    </style>
+</head>
+<style>
+    .btn-voltar {
+        background-color: #718096; /* Cinza profissional */
+        color: white;
+        padding: 10px 15px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        float: right; /* Joga o botão para o canto direito */
+        margin-bottom: 20px;
+        transition: background-color 0.2s;
+    }
+    .btn-voltar:hover {
+        background-color: #4a5568; /* Cinza mais escuro ao passar o mouse */
+    }
+    
+    /* Linha para limpar o alinhamento do float */
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+</style>
+
+<div class="clearfix">
+    <a href="/" class="btn-voltar">⬅ Voltar ao Menu Principal</a>
+</div>
+<body>
+
+<div class="container">
+    <h2>Cadastro de Cliente (Lojas / Distribuidores)</h2>
+    <div id="msg"></div>
+    
+    <form id="formCliente">
+        <div class="form-group">
+            <label>Razão Social:</label>
+            <input type="text" id="razao_social" required>
+        </div>
+        <div class="form-group">
+            <label>CNPJ ou CPF:</label>
+            <input type="text" id="cnpj_cpf" required>
+        </div>
+        <div class="form-group">
+            <label>Telefone:</label>
+            <input type="text" id="telefone">
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="email">
+        </div>
+        <div class="form-group">
+            <label>Cidade:</label>
+            <input type="text" id="cidade">
+        </div>
+        <div class="form-group">
+            <label>Estado (UF):</label>
+            <input type="text" id="estado" maxlength="2" placeholder="EX: BA">
+        </div>
+        <button type="submit">Salvar Cliente</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('formCliente').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const dados = {
+            razao_social: document.getElementById('razao_social').value,
+            cnpj_cpf: document.getElementById('cnpj_cpf').value,
+            telefone: document.getElementById('telefone').value,
+            email: document.getElementById('email').value,
+            cidade: document.getElementById('cidade').value,
+            estado: document.getElementById('estado').value
+        };
+
+        fetch('/api/cliente', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.error) {
+                document.getElementById('msg').innerHTML = `<p style="color:red;">${data.error}</p>`;
+            } else {
+                document.getElementById('msg').innerHTML = `<p style="color:green;">${data.message}</p>`;
+                document.getElementById('formCliente').reset();
+            }
+        })
+        .catch(err => console.error('Erro:', err));
+    });
+</script>
+
+</body>
+</html>

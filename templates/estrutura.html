@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engenharia de Estrutura (BOM) - MH Indústria</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans p-6">
+    <nav class="bg-gray-900 text-white shadow-md mb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 p-2 rounded-lg text-white">
+                        <i class="fa-solid fa-industry text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-base tracking-wide block">MH Indústria</span>
+                        <span class="text-[10px] text-gray-400 block -mt-1 font-mono">PLM & Gestão v1.0</span>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-1 sm:space-x-3 text-sm font-medium">
+                    <a href="/estrutura" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                        <i class="fa-solid fa-layer-group mr-1.5 text-blue-400"></i> <span class="hidden sm:inline">Estrutura (BOM)</span>
+                    </a>
+                    <a href="/produto" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                        <i class="fa-solid fa-box mr-1.5 text-orange-400"></i> <span class="hidden sm:inline">Produtos</span>
+                    </a>
+                    <a href="/fornecedor" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                        <i class="fa-solid fa-truck-fast mr-1.5 text-purple-400"></i> <span class="hidden sm:inline">Fornecedores</span>
+                    </a>
+                    <a href="/entrada" class="px-3 py-2 rounded-lg hover:bg-gray-800 transition flex items-center text-gray-300 hover:text-white">
+                        <i class="fa-solid fa-file-invoice-dollar mr-1.5 text-emerald-400"></i> <span class="hidden sm:inline">Entrada NF</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+        <div class="border-b border-gray-200 pb-4 mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold text-gray-800 flex items-center">
+                    <i class="fa-solid fa-layer-group text-blue-600 mr-2"></i> Engenharia de Estrutura Real (Postgres)
+                </h1>
+                <p class="text-xs text-gray-500 mt-1">Gerencie componentes e detalhamentos de processo por item da árvore.</p>
+            </div>
+            <div>
+                <button onclick="baixarRelatorioPDF()" class="bg-gray-800 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition flex items-center shadow-sm">
+                    <i class="fa-solid fa-file-pdf mr-2 text-red-400"></i> Exportar Conferência
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <label class="block text-xs font-bold text-blue-900 uppercase mb-1">1. Selecione o Produto Final (Pai)</label>
+            <select id="select-produto-pai" onchange="carregarEstruturaDoBanco()" class="w-full sm:w-1/2 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none font-semibold text-gray-700">
+                <option value="">-- Carregando produtos pais válidos (PA / PI) --</option>
+            </select>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 hidden" id="painel-formulario-componente">
+            <h3 id="titulo-form-componente" class="text-xs font-bold text-gray-600 uppercase mb-3"><i class="fa-solid fa-plus text-blue-600 mr-2"></i> Adicionar Insumo à Estrutura</h3>
+            <input type="hidden" id="estrutura_item_id">
+            
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div class="md:col-span-5">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Selecione o Insumo / Material</label>
+                    <select id="select-componente" onchange="verificarTipoProduto()" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none font-medium text-gray-700">
+                        <option value="">-- Selecione o Componente --</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Perda Estimada (%)</label>
+                    <input type="number" id="perda_estimada" value="0" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div class="md:col-span-3">
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Observação / Instrução (OBS)</label>
+                    <input type="text" id="observacao" placeholder="Ex: Dobrar na CNC / Cortar no Laser" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div class="md:col-span-2 flex space-x-2">
+                    <button type="button" onclick="salvarComponenteBanco()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg text-sm transition">Gravar</button>
+                    <button type="button" onclick="cancelarEdicaoItem()" id="btn-cancelar-item" class="hidden flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 rounded-lg text-sm transition">Sair</button>
+                </div>
+            </div>
+
+            <div id="painel-dimensoes-chapa" class="hidden mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div id="wrapper-largura">
+                    <label id="label-largura-mm" class="block text-xs font-semibold text-gray-600 uppercase mb-1">Largura (mm)</label>
+                    <input type="number" id="largura_mm" value="0" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div>
+                    <label id="label-comprimento-mm" class="block text-xs font-semibold text-gray-600 uppercase mb-1">Comprimento (mm)</label>
+                    <input type="number" id="comprimento_mm" step="0.01" value="0" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+                <div>
+                    <label id="label-qtd-pecas" class="block text-xs font-semibold text-gray-600 uppercase mb-1">Quantidade de Peças</label>
+                    <input type="number" id="qtd_pecas" value="1" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+            </div>
+
+            <div id="painel-quantidade-direta" class="hidden mt-4 pt-4 border-t border-gray-200">
+                <div class="w-full sm:w-1/3">
+                    <label id="label-qtd-direta" class="block text-xs font-semibold text-gray-600 uppercase mb-1">Quantidade Necessária</label>
+                    <input type="number" id="qtd_direta" step="0.0001" value="0" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none">
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-gray-100 font-semibold text-gray-600 border-b border-gray-200 text-xs uppercase">
+                        <th class="px-4 py-3">Insumo / Componente</th>
+                        <th class="px-4 py-3 text-center">Tipo</th>
+                        <th class="px-4 py-3 text-right">Qtd Calc.</th>
+                        <th class="px-4 py-3 text-right">Perda</th>
+                        <th class="px-4 py-3 text-right">Custo Unit.</th>
+                        <th class="px-4 py-3 text-right">Subtotal</th>
+                        <th class="px-4 py-3">Observações (OBS)</th>
+                        <th class="px-4 py-3 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="grade-estrutura" class="divide-y divide-gray-100">
+                    <tr><td colspan="8" class="px-4 py-4 text-center text-gray-400 italic">Selecione um produto pai para ver ou lançar componentes.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <div class="bg-gray-900 text-white px-6 py-4 rounded-xl text-right min-w-[250px]">
+                <p class="text-xs uppercase tracking-wider text-gray-400 font-medium">Custo Total da Estrutura</p>
+                <p class="text-2xl font-bold text-emerald-400 mt-1" id="custo-total-estrutura">R$ 0,00</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let listaPaisGlobal = [];
+        let listaFilhosGlobal = [];
+        let itensEstruturaSalva = [];
+
+        function baixarRelatorioPDF() {
+            const paiId = document.getElementById('select-produto-pai').value;
+            if (!paiId) {
+                alert("Por favor, selecione um Produto Pai antes de exportar o PDF de conferência.");
+                return;
+            }
+            window.open(`/api/estrutura/${paiId}/pdf`, '_blank');
+        }
+
+        async function inicializarTela() {
+            try {
+                const resPais = await fetch('/api/produtos/pais');
+                listaPaisGlobal = await resPais.json();
+                
+                const resFilhos = await fetch('/api/produtos/filhos');
+                listaFilhosGlobal = await resFilhos.json();
+                
+                const selectPai = document.getElementById('select-produto-pai');
+                const selectComp = document.getElementById('select-componente');
+                
+                selectPai.innerHTML = '<option value="">-- Escolha o Produto Pai (PA / PI) --</option>';
+                selectComp.innerHTML = '<option value="">-- Escolha o Insumo --</option>';
+                
+                listaPaisGlobal.forEach(p => {
+                    selectPai.innerHTML += `<option value="${p.id}">${p.codigo} - ${p.descricao}</option>`;
+                });
+
+                listaFilhosGlobal.forEach(p => {
+                    selectComp.innerHTML += `<option value="${p.id}">${p.codigo} - ${p.descricao} [${p.unidade_consumo}]</option>`;
+                });
+            } catch (err) {
+                console.error("Erro ao inicializar dados de engenharia na tela:", err);
+            }
+        }
+
+        function verificarTipoProduto() {
+            const compId = parseInt(document.getElementById('select-componente').value);
+            const produto = listaFilhosGlobal.find(p => p.id === compId);
+            
+            const painelChapa = document.getElementById('painel-dimensoes-chapa');
+            const painelDireto = document.getElementById('painel-quantidade-direta');
+            const wrapperLargura = document.getElementById('wrapper-largura');
+
+            if (!produto) {
+                painelChapa.classList.add('hidden');
+                painelDireto.classList.add('hidden');
+                return;
+            }
+
+            const unidadeConsumo = produto.unidade_consumo ? produto.unidade_consumo.toUpperCase() : '';
+            
+            if (unidadeConsumo === 'M2' || unidadeConsumo === 'M²') {
+                painelChapa.classList.remove('hidden');
+                painelDireto.classList.add('hidden');
+                wrapperLargura.classList.remove('invisible'); 
+                
+                document.getElementById('label-largura-mm').innerText = "Largura (mm)";
+                document.getElementById('label-comprimento-mm').innerText = "Comprimento (mm)";
+                document.getElementById('label-qtd-pecas').innerText = "Quantidade de Peças";
+            } 
+            else if (unidadeConsumo === 'METRO' || unidadeConsumo === 'M') {
+                painelChapa.classList.remove('hidden');
+                painelDireto.classList.add('hidden');
+                wrapperLargura.classList.add('invisible'); 
+                document.getElementById('largura_mm').value = "0"; 
+                
+                document.getElementById('label-comprimento-mm').innerText = "Comprimento do Corte (Metros)";
+                document.getElementById('label-qtd-pecas').innerText = "Qtd de Pedaços";
+            } 
+            else {
+                painelChapa.classList.add('hidden');
+                painelDireto.classList.remove('hidden');
+                document.getElementById('label-qtd-direta').innerText = `Quantidade Necessária em [${unidadeConsumo}]`;
+            }
+        }
+
+        async function carregarEstruturaDoBanco() {
+            const paiId = document.getElementById('select-produto-pai').value;
+            const painelForm = document.getElementById('painel-formulario-componente');
+            
+            if (!paiId) {
+                painelForm.classList.add('hidden');
+                document.getElementById('grade-estrutura').innerHTML = `<tr><td colspan="8" class="px-4 py-4 text-center text-gray-400 italic">Selecione um produto pai para ver ou lançar componentes.</td></tr>`;
+                document.getElementById('custo-total-estrutura').innerText = "R$ 0,00";
+                return;
+            }
+
+            painelForm.classList.remove('hidden');
+            const res = await fetch(`/api/estrutura/${paiId}`);
+            itensEstruturaSalva = await res.json();
+            
+            renderizarGrade();
+        }
+
+        // FUNÇÃO RENDERIZAR REESTRUTURADA COM PADRÕES SEGUROS PARA O TAILWIND V4 E RENDERIZAÇÃO NATIVA DO NAVEGADOR
+        function renderizarGrade() {
+            const tbody = document.getElementById('grade-estrutura');
+            tbody.innerHTML = "";
+            let totalGeral = 0;
+
+            if (itensEstruturaSalva.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-4 text-center text-gray-400 italic">Nenhum componente cadastrado para este produto.</td></tr>`;
+                document.getElementById('custo-total-estrutura').innerText = "R$ 0,00";
+                return;
+            }
+
+            itensEstruturaSalva.forEach(item => {
+                totalGeral += item.subtotal || 0;
+                
+                let dimTexto = "-";
+                if (item.largura_mm > 0 && item.comprimento_mm > 0) {
+                    dimTexto = `${item.largura_mm}x${item.comprimento_mm} mm`;
+                } else if (item.comprimento_mm > 0) {
+                    dimTexto = `${item.comprimento_mm} m`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 text-xs border-b border-gray-100 text-gray-700";
+
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-semibold text-gray-700">
+                        ${item.codigo} - ${item.descricao}
+                        <span class="block text-[10px] text-blue-500 font-normal">Dimensão cadastrada: ${dimTexto}</span>
+                    </td>
+                    <td class="px-4 py-3 text-center font-mono text-gray-500">${item.unidade || 'UN'}</td>
+                    <td class="px-4 py-3 text-right font-mono font-bold">${parseFloat(item.quantidade_necessaria || 0).toFixed(4)}</td>
+                    <td class="px-4 py-3 text-right text-gray-500">${item.perda_estimada || 0}%</td>
+                    <td class="px-4 py-3 text-right font-mono">R$ ${parseFloat(item.custo_unitario || 0).toFixed(2)}</td>
+                    <td class="px-4 py-3 text-right font-semibold text-emerald-600 font-mono">R$ ${parseFloat(item.subtotal || 0).toFixed(2)}</td>
+                    <td class="px-4 py-3 text-gray-600 italic max-w-[200px] truncate" title="${item.observacao || ''}">${item.observacao || ''}</td>
+                    <td class="px-4 py-3 text-center space-x-3">
+                        <button type="button" onclick="prepararEdicaoItem(${item.id})" class="text-blue-600 hover:text-blue-800 font-medium cursor-pointer"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button type="button" onclick="deletarComponente(${item.id})" class="text-red-600 hover:text-red-800 font-medium cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('custo-total-estrutura').innerText = `R$ ${totalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+        }
+
+        async function salvarComponenteBanco() {
+            const id = document.getElementById('estrutura_item_id').value;
+            const paiId = document.getElementById('select-produto-pai').value;
+            const compId = document.getElementById('select-componente').value;
+            const perda = parseFloat(document.getElementById('perda_estimada').value || 0);
+            const obs = document.getElementById('observacao').value;
+
+            const produto = listaFilhosGlobal.find(p => p.id === parseInt(compId));
+            let qtdCalculada = 0;
+
+            const larg = parseFloat(document.getElementById('largura_mm').value || 0);
+            const comp = parseFloat(document.getElementById('comprimento_mm').value || 0);
+            const pecas = parseInt(document.getElementById('qtd_pecas').value || 1);
+
+            if (produto) {
+                const unidadeConsumo = produto.unidade_consumo ? produto.unidade_consumo.toUpperCase() : '';
+
+                if (unidadeConsumo === 'M2' || unidadeConsumo === 'M²') {
+                    qtdCalculada = (larg * comp / 1000000) * pecas;
+                } 
+                else if (unidadeConsumo === 'METRO' || unidadeConsumo === 'M') {
+                    qtdCalculada = comp * pecas;
+                } 
+                else {
+                    qtdCalculada = parseFloat(document.getElementById('qtd_direta').value || 0);
+                }
+            }
+
+            const dados = {
+                produto_pai_id: parseInt(paiId),
+                componente_id: parseInt(compId),
+                largura_mm: larg,
+                comprimento_mm: comp,
+                quantidade_pecas: pecas,
+                quantidade_necessaria: qtdCalculada,
+                perda_estimada: perda,
+                observacao: obs
+            };
+
+            const url = id ? `/api/estrutura/${id}` : '/api/estrutura';
+            const method = id ? 'PUT' : 'POST';
+
+            const res = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+
+            if (res.ok) {
+                cancelarEdicaoItem();
+                carregarEstruturaDoBanco();
+            } else {
+                const errData = await res.json();
+                alert(errData.error || "Erro ao salvar componente.");
+            }
+        }
+
+        function prepararEdicaoItem(id) {
+            const item = itensEstruturaSalva.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('estrutura_item_id').value = item.id;
+            
+            // Correção segura para localizar o componente pelo código retornado do backend
+            const produtoFilho = listaFilhosGlobal.find(p => p.codigo === item.codigo);
+            if (produtoFilho) {
+                document.getElementById('select-componente').value = produtoFilho.id;
+            }
+
+            document.getElementById('perda_estimada').value = item.perda_estimada || 0;
+            document.getElementById('observacao').value = item.observacao || '';
+            
+            document.getElementById('largura_mm').value = item.largura_mm || "0";
+            document.getElementById('comprimento_mm').value = item.comprimento_mm || "0";
+            document.getElementById('qtd_pecas').value = item.quantidade_pecas || "1";
+            document.getElementById('qtd_direta').value = item.quantidade_necessaria || 0;
+
+            verificarTipoProduto();
+            document.getElementById('titulo-form-componente').innerHTML = '<i class="fa-solid fa-pen text-orange-500 mr-2"></i> Editar Componente da Estrutura';
+            document.getElementById('btn-cancelar-item').classList.remove('hidden');
+        }
+
+        function cancelarEdicaoItem() {
+            document.getElementById('estrutura_item_id').value = "";
+            document.getElementById('select-componente').value = "";
+            document.getElementById('perda_estimada').value = "0";
+            document.getElementById('observacao').value = "";
+            document.getElementById('largura_mm').value = "0";
+            document.getElementById('comprimento_mm').value = "0";
+            document.getElementById('qtd_pecas').value = "1";
+            document.getElementById('qtd_direta').value = "0";
+            
+            verificarTipoProduto();
+            document.getElementById('titulo-form-componente').innerHTML = '<i class="fa-solid fa-plus text-blue-600 mr-2"></i> Adicionar Insumo à Estrutura';
+            document.getElementById('btn-cancelar-item').classList.add('hidden');
+        }
+
+        async function deletarComponente(id) {
+            if (confirm('Remover este componente da estrutura definitiva?')) {
+                try {
+                    const res = await fetch(`/api/estrutura/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        carregarEstruturaDoBanco();
+                    } else {
+                        const errData = await res.json();
+                        alert(errData.error || "Erro ao remover componente do banco.");
+                    }
+                } catch (err) {
+                    alert("Erro de conexão ao tentar deletar the item.");
+                }
+            }
+        }
+
+        window.onload = inicializarTela;
+    </script>
+</body>
+</html>
