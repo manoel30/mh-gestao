@@ -15,17 +15,16 @@
         }
         .nav-tabs .nav-link { color: #1A365D; font-weight: bold; }
         .product-card img {
-            height: 180px;
+            height: 160px;
             object-fit: cover;
             background-color: #eaeaea;
         }
-        /* Botão Voltar integrado à Barra Superior */
         .btn-voltar-topo {
             background-color: #4a5568;
             color: white;
             border: 1px solid #718096;
-            padding: 5px 15px;
-            font-size: 14px;
+            padding: 6px 12px;
+            font-size: 13px;
             font-weight: bold;
             text-decoration: none;
             border-radius: 4px;
@@ -35,18 +34,22 @@
             background-color: #2d3748;
             color: white;
         }
+        @media (max-width: 576px) {
+            .navbar-brand { font-size: 14px; white-space: normal; }
+            .btn-voltar-topo { padding: 4px 8px; font-size: 11px; }
+        }
     </style>
 </head>
 <body>
 
     <nav class="navbar navbar-dark navbar-custom shadow-sm mb-4">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <span class="navbar-brand mb-0 h1">MH INDÚSTRIA E COMÉRCIO - Painel Comercial</span>
-            <a href="/" class="btn-voltar-topo">⬅ Voltar ao Menu Principal</a>
+        <div class="container-fluid d-flex justify-content-between align-items-center gap-2">
+            <span class="navbar-brand mb-0 h1 fw-bold">MH INDÚSTRIA - Painel Comercial</span>
+            <a href="/" class="btn-voltar-topo text-center">⬅ Menu</a>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container-fluid px-3 px-md-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -58,7 +61,7 @@
             {% endif %}
         {% endwith %}
 
-        <ul class="nav nav-tabs mb-4" id="comercialTabs" role="tablist">
+        <ul class="nav nav-tabs mb-4 flex-nowrap overflow-x-auto text-nowrap" id="comercialTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link {% if not busca_atual %}active{% endif %}" id="clientes-tab" data-bs-toggle="tab" data-bs-target="#clientes-pane" type="button" role="tab">
                     👥 Carteira de Clientes
@@ -74,67 +77,67 @@
         <div class="tab-content" id="comercialTabsContent">
             
             <div class="tab-pane fade {% if not busca_atual %}show active{% endif %}" id="clientes-pane" role="tabpanel" aria-labelledby="clientes-tab">
-                <div class="card shadow-sm p-4 mb-4">
-                    <h4 class="text-primary mb-3">Cadastrar Novo Cliente (Lojas / Distribuidores)</h4>
+                <div class="card shadow-sm p-3 p-md-4 mb-4 border-0 rounded-3">
+                    <h5 class="text-primary fw-bold mb-3">Cadastrar Novo Cliente (Lojas / Distribuidores)</h5>
                     <form id="formCadastroCliente" action="/api/cliente" method="POST">
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Razão Social:</label>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Razão Social:</label>
                                 <input type="text" class="form-control" name="razao_social" required>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">CNPJ / CPF:</label>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-muted text-uppercase">CNPJ / CPF:</label>
                                 <input type="text" class="form-control" name="cnpj_cpf" placeholder="00.000.000/0000-00" required>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Nome Fantasia:</label>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Nome Fantasia:</label>
                                 <input type="text" class="form-control" name="nome_fantasia">
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Telefone:</label>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Telefone:</label>
                                 <input type="text" class="form-control" name="telefone" placeholder="(75) 99999-9999">
                             </div>
-                            <div class="col-md-8">
-                                <label class="form-label fw-bold">Endereço da Loja:</label>
+                            <div class="col-12 col-md-8">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Endereço da Loja:</label>
                                 <input type="text" class="form-control" name="endereco" placeholder="Rua, Número, Bairro">
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Cidade:</label>
+                            <div class="col-12 col-md-4">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Cidade:</label>
                                 <input type="text" class="form-control" name="cidade" value="Feira de Santana">
                             </div>
                             
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Latitude:</label>
+                            <div class="col-6 col-md-4">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Latitude:</label>
                                 <input type="number" step="any" class="form-control" id="lat" name="latitude" placeholder="Ex: -12.2574">
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Longitude:</label>
+                            <div class="col-6 col-md-4">
+                                <label class="form-label fw-bold small text-muted text-uppercase">Longitude:</label>
                                 <input type="number" step="any" class="form-control" id="lng" name="longitude" placeholder="Ex: -38.9598">
                             </div>
-                            <div class="col-md-4 d-flex align-items-end">
-                                <button type="button" class="btn btn-success w-100" onclick="capturarGPS()">
-                                    📍 Capturar Localização Atual
+                            <div class="col-12 col-md-4 d-flex align-items-end">
+                                <button type="button" class="btn btn-success w-100 fw-bold" onclick="capturarGPS()">
+                                    📍 Capturar GPS
                                 </button>
                             </div>
                             
-                            <div class="col-md-12 mt-4">
-                                <button type="submit" class="btn btn-primary px-5 fw-bold">Salvar Cliente na Carteira</button>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary w-100 w-md-auto px-5 fw-bold rounded-3">Salvar Cliente na Carteira</button>
                             </div>
                         </div>
                     </form>
                 </div>
 
-                <div class="card shadow-sm p-4">
-                    <h4 class="text-secondary mb-3">Sua Carteira de Clientes</h4>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                <div class="card shadow-sm p-3 p-md-4 border-0 rounded-3">
+                    <h5 class="text-secondary fw-bold mb-3">Sua Carteira de Clientes</h5>
+                    <div class="table-responsive text-nowrap">
+                        <table class="table table-hover align-middle mb-0">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Razão Social / Nome Fantasia</th>
+                                    <th>Razão Social / Fantasia</th>
                                     <th>CNPJ/CPF</th>
                                     <th>Telefone</th>
                                     <th>Cidade</th>
-                                    <th>Localização</th>
+                                    <th>Mapa</th>
                                     <th class="text-center">Ações</th>
                                 </tr>
                             </thead>
@@ -142,17 +145,17 @@
                                 {% for cliente in clientes %}
                                 <tr>
                                     <td>
-                                        <strong>{{ cliente.razao_social }}</strong><br>
-                                        <small class="text-muted">{{ cliente.nome_fantasia or cliente.razao_social }}</small>
+                                        <div class="fw-bold text-dark">{{ cliente.razao_social }}</div>
+                                        <small class="text-muted d-block">{{ cliente.nome_fantasia or cliente.razao_social }}</small>
                                     </td>
-                                    <td>{{ cliente.cnpj_cpf }}</td>
+                                    <td class="font-mono small">{{ cliente.cnpj_cpf }}</td>
                                     <td>{{ cliente.telefone or 'Não informado' }}</td>
                                     <td>{{ cliente.cidade }}</td>
                                     <td>
                                         {% if cliente.latitude and cliente.longitude %}
-                                            <a href="http://maps.google.com/?q={{ cliente.latitude }},{{ cliente.longitude }}" 
-                                               target="_blank" class="btn btn-sm btn-outline-info">
-                                                🗺️ Ver no Mapa
+                                            <a href="https://maps.google.com/?q={{ cliente.latitude }},{{ cliente.longitude }}" 
+                                               target="_blank" class="btn btn-sm btn-outline-info fw-bold">
+                                                🗺️ Ver Mapa
                                             </a>
                                         {% else %}
                                             <span class="badge bg-secondary">Sem GPS</span>
@@ -160,11 +163,11 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
-                                            <button class="btn btn-sm btn-warning" onclick="abrirEdicao('{{ cliente.id }}', '{{ cliente.razao_social }}', '{{ cliente.telefone }}')">
+                                            <button class="btn btn-sm btn-warning fw-bold" onclick="abrirEdicao('{{ cliente.id }}', '{{ cliente.razao_social }}', '{{ cliente.telefone }}')">
                                                 Editar
                                             </button>
-                                            <form action="/api/cliente/{{ cliente.id }}/deletar" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este cliente?');">
-                                                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                            <form action="/api/cliente/{{ cliente.id }}/deletar" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este cliente?');" class="m-0">
+                                                <button type="submit" class="btn btn-sm btn-danger fw-bold">Excluir</button>
                                             </form>
                                         </div>
                                     </td>
@@ -181,44 +184,44 @@
             </div>
 
             <div class="tab-pane fade {% if busca_atual %}show active{% endif %}" id="catalogo-pane" role="tabpanel" aria-labelledby="catalogo-tab">
-                <div class="row">
-                    <div class="col-lg-8 mb-4">
-                        <div class="card shadow-sm p-4">
-                            <h4 class="text-secondary mb-3">Catálogo de Vendas - Peças Padronizadas</h4>
+                <div class="row g-4">
+                    <div class="col-12 col-lg-8">
+                        <div class="card shadow-sm p-3 p-md-4 border-0 rounded-3">
+                            <h5 class="text-secondary fw-bold mb-3">Catálogo de Vendas - Peças Padronizadas</h5>
                             
-                            <form action="/comercial" method="GET" class="d-flex mb-4">
-                                <input type="text" name="busca" class="form-control me-2" placeholder="Digite a descrição do produto (Ex: GRELHA)..." value="{{ busca_atual or '' }}">
-                                <button type="submit" class="btn btn-primary me-2">Buscar</button>
-                                <a href="/comercial" class="btn btn-secondary">Limpar</a>
+                            <form action="/comercial" method="GET" class="d-flex gap-2 mb-4">
+                                <input type="text" name="busca" class="form-control" placeholder="Buscar produto (Ex: GRELHA)..." value="{{ busca_atual or '' }}">
+                                <button type="submit" class="btn btn-primary fw-bold px-3">Buscar</button>
+                                <a href="/comercial" class="btn btn-secondary fw-bold">Limpar</a>
                             </form>
                             
-                            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
                                 {% for produto in produtos %}
                                 <div class="col">
-                                    <div class="card h-100 product-card shadow-sm border-0 position-relative">
-                                        <span class="position-absolute top-0 end-0 badge bg-primary m-2">{{ produto.unidade_consumo }}</span>
+                                    <div class="card h-100 product-card shadow-sm border-0 position-relative rounded-3 overflow-hidden">
+                                        <span class="position-absolute top-0 end-0 badge bg-primary m-2 shadow-sm">{{ produto.unidade_consumo }}</span>
                                         
                                         {% if produto.imagem_url %}
-                                            <img src="{{ produto.imagem_url }}" class="card-img-top rounded-top" alt="{{ produto.descricao }}">
+                                            <img src="{{ produto.imagem_url }}" class="card-img-top" alt="{{ produto.descricao }}">
                                         {% else %}
-                                            <div class="d-flex align-items-center justify-content-center bg-light border-bottom text-muted" style="height: 150px;">
-                                                <span class="text-center px-2">📷 Foto em Breve<br><small style="font-size: 11px;">Inox MH Indústria</small></span>
+                                            <div class="d-flex align-items-center justify-content-center bg-light border-bottom text-muted" style="height: 160px;">
+                                                <span class="text-center px-2 small">📷 Foto em Breve<br><small style="font-size: 11px;">Inox MH Indústria</small></span>
                                             </div>
                                         {% endif %}
                                         
-                                        <div class="card-body d-flex flex-column justify-content-between">
-                                            <div>
-                                                <small class="text-uppercase text-muted fw-bold" style="font-size: 10px;">Cód: {{ produto.codigo_interno }}</small>
-                                                <h6 class="card-title text-dark mt-1 mb-2" style="font-size: 14px;">{{ produto.descricao }}</h6>
+                                        <div class="card-body d-flex flex-column justify-content-between p-3">
+                                            <div class="mb-3">
+                                                <small class="text-uppercase text-muted fw-bold font-mono" style="font-size: 10px;">Cód: {{ produto.codigo_interno }}</small>
+                                                <h6 class="card-title text-dark mt-1 mb-0 fw-bold" style="font-size: 13px; line-height: 1.4;">{{ produto.descricao }}</h6>
                                             </div>
                                             
-                                            <div class="mt-2">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <span class="text-muted small">Preço:</span>
-                                                    <span class="text-success fw-bold">R$ {{ "%.2f"|format(produto.preco_tabela) }}</span>
+                                            <div>
+                                                <div class="d-flex justify-content-between align-items-center mb-2 bg-light p-2 rounded">
+                                                    <span class="text-muted small">Preço Tabela:</span>
+                                                    <span class="text-success fw-bold fs-6">R$ {{ "%.2f"|format(produto.preco_tabela) }}</span>
                                                 </div>
                                                 
-                                                <button class="btn btn-outline-primary btn-sm w-100" 
+                                                <button class="btn btn-primary btn-sm w-100 fw-bold rounded-2 py-1.5" 
                                                         onclick="adicionarAoCarrinho('{{ produto.id }}', '{{ produto.descricao }}', '{{ produto.preco_tabela }}')">
                                                     ➕ Adicionar ao Pedido
                                                 </button>
@@ -228,21 +231,23 @@
                                 </div>
                                 {% else %}
                                 <div class="col-12 text-center text-muted py-5">
-                                    <p>Nenhum produto encontrado para esta busca.</p>
+                                    <p class="mb-0">Nenhum produto encontrado para esta busca.</p>
                                 </div>
                                 {% endfor %}
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-4">
-                        <div class="card shadow-sm p-4 position-sticky" style="top: 20px;">
-                            <h4 class="text-primary mb-3">📝 Rascunho do Pedido</h4>
+                    <div class="col-12 col-lg-4">
+                        <div class="card shadow-sm p-3 p-md-4 border-0 rounded-3 position-sticky" style="top: 20px;">
+                            <h5 class="text-primary fw-bold mb-3 d-flex align-items-center">
+                                <span>📝 Rascunho do Pedido</span>
+                            </h5>
                             
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Selecione o Cliente:</label>
+                                <label class="form-label fw-bold small text-muted">SELECIONE O CLIENTE:</label>
                                 <select id="pedido_cliente_id" class="form-select">
-                                    <option value="">-- Escolha um cliente da carteira --</option>
+                                    <option value="">-- Escolha um cliente --</option>
                                     {% for cliente in clientes %}
                                         <option value="{{ cliente.id }}">{{ cliente.razao_social }}</option>
                                     {% endfor %}
@@ -250,7 +255,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Prazo de Pagamento:</label>
+                                <label class="form-label fw-bold small text-muted">PRAZO DE PAGAMENTO:</label>
                                 <select id="pedido_prazo" class="form-select" onchange="recalcularTotais()">
                                     <option value="A_VISTA">À Vista (5% Desconto)</option>
                                     <option value="30_DIAS">30 Dias (3% acima de R$5k)</option>
@@ -258,28 +263,28 @@
                                 </select>
                             </div>
 
-                            <hr>
-                            <div id="itens_carrinho" class="mb-3" style="max-height: 200px; overflow-y: auto;">
-                                <p class="text-muted text-center my-3" id="carrinho_vazio">Nenhum item selecionado.</p>
+                            <hr class="text-muted">
+                            <div id="itens_carrinho" class="mb-3" style="max-height: 240px; overflow-y: auto;">
+                                <p class="text-muted text-center my-3 small" id="carrinho_vazio">Nenhum item selecionado.</p>
                             </div>
-                            <hr>
+                            <hr class="text-muted">
 
-                            <div class="bg-light p-3 rounded mb-3" style="font-size: 14px;">
-                                <div class="d-flex justify-content-between mb-1">
+                            <div class="bg-light p-3 rounded mb-3" style="font-size: 13px;">
+                                <div class="d-flex justify-content-between mb-1 text-secondary">
                                     <span>Subtotal Bruto:</span>
-                                    <span id="total_bruto">R$ 0,00</span>
+                                    <span id="total_bruto" class="fw-bold">R$ 0,00</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-1 text-danger">
                                     <span>Desconto/Acréscimo:</span>
-                                    <span id="total_desconto">R$ 0,00</span>
+                                    <span id="total_desconto" class="fw-bold">R$ 0,00</span>
                                 </div>
-                                <div class="d-flex justify-content-between fw-bold text-success fs-5 pt-2 border-top">
+                                <div class="d-flex justify-content-between fw-bold text-success fs-5 pt-2 border-top border-secondary-subtle">
                                     <span>Valor Líquido:</span>
                                     <span id="total_liquido">R$ 0,00</span>
                                 </div>
                             </div>
 
-                            <button class="btn btn-success w-100 btn-lg fw-bold" onclick="finalizarPedido()">
+                            <button class="btn btn-success w-100 btn-lg fw-bold rounded-3 shadow-sm py-2 fs-6" onclick="finalizarPedido()">
                                 🚀 Fechar e Enviar Pedido
                             </button>
                         </div>
@@ -296,8 +301,8 @@
 
     function capturarGPS() {
         if (navigator.geolocation) {
-            document.getElementById('lat').placeholder = "Localizando...";
-            document.getElementById('lng').placeholder = "Localizando...";
+            document.getElementById('lat').placeholder = "Buscando...";
+            document.getElementById('lng').placeholder = "Buscando...";
 
             navigator.geolocation.getCurrentPosition(
                 function (position) {
@@ -305,7 +310,7 @@
                     document.getElementById('lng').value = position.coords.longitude.toFixed(8);
                 },
                 function (error) {
-                    alert("Erro ao capturar o GPS. Ative a localização no celular.");
+                    alert("Erro ao capturar o GPS. Ative a localização nas configurações do aparelho.");
                     document.getElementById('lat').placeholder = "Erro";
                     document.getElementById('lng').placeholder = "Erro";
                 },
@@ -360,7 +365,7 @@
         container.innerHTML = '';
 
         if (carrinho.length === 0) {
-            container.innerHTML = '<p class="text-muted text-center my-3" id="carrinho_vazio">Nenhum item selecionado.</p>';
+            container.innerHTML = '<p class="text-muted text-center my-3 small" id="carrinho_vazio">Nenhum item selecionado.</p>';
             recalcularTotais();
             return;
         }
@@ -369,14 +374,14 @@
             let div = document.createElement('div');
             div.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border-bottom bg-white rounded shadow-sm';
             div.innerHTML = `
-                <div style="max-width: 60%;">
-                    <small class="fw-bold d-block text-truncate">${item.descricao}</small>
-                    <small class="text-muted">R$ ${item.preco_tabela.toFixed(2)} / un</small>
+                <div style="max-width: 65%;" class="pe-2">
+                    <small class="fw-bold d-block text-truncate text-dark" style="font-size: 12px;">${item.descricao}</small>
+                    <small class="text-muted" style="font-size: 11px;">R$ ${item.preco_tabela.toFixed(2)} / un</small>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-sm btn-secondary py-0 px-2" onclick="alterarQuantidade('${item.produto_id}', -1)">-</button>
-                    <span class="fw-bold">${item.quantidade}</span>
-                    <button class="btn btn-sm btn-secondary py-0 px-2" onclick="alterarQuantidade('${item.produto_id}', 1)">+</button>
+                    <button class="btn btn-sm btn-light border py-0 px-2 fw-bold" onclick="alterarQuantidade('${item.produto_id}', -1)">-</button>
+                    <span class="fw-bold small">${item.quantidade}</span>
+                    <button class="btn btn-sm btn-light border py-0 px-2 fw-bold" onclick="alterarQuantidade('${item.produto_id}', 1)">+</button>
                 </div>
             `;
             container.appendChild(div);
@@ -400,7 +405,7 @@
             percentualDesconto = 0.03;
         } else if (prazo === '30_60_DIAS' && valorBruto >= 10000.00) {
             percentualDesconto = 0.00;
-        } else if (valorBruto < 3000.00 && (prazo === '30_DIAS' || prazo === '30_60_DIAS')) {
+        } else if (valorBruto > 0 && valorBruto < 3000.00 && (prazo === '30_DIAS' || prazo === '30_60_DIAS')) {
             percentualDesconto = -0.02; // Acréscimo
         }
 
@@ -439,7 +444,7 @@
         .then(response => response.json())
         .then(data => {
             if (data.pedido_id) {
-                alert(`Sucesso! Pedido Nº ${data.pedido_id} gerado com sucesso!\nValor Líquido: R$ ${data.valor_final.toFixed(2)}`);
+                alert(`Sucesso! Pedido Nº ${data.pedido_id} gerado!\nValor Líquido: R$ ${data.valor_final.toFixed(2)}`);
                 carrinho = [];
                 renderizarCarrinho();
                 document.getElementById('pedido_cliente_id').value = "";
