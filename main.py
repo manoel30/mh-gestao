@@ -14,6 +14,15 @@ app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://banco_gestao_mh_user:7nDZqiN920jZKUiyssC5O3JtG9azi0aM@dpg-d8b35b4m0tmc73d5ovog-a/bd-gestao'
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# O Python vai tentar ler a variável do Render. 
+# Se você estiver testando no computador local e ela não existir, ele usa o banco local como plano B.
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 
+    'postgresql://postgres:1234@localhost:5432/mh_local'
+)
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 # 2. Inicializa o Banco conectado ao App
 db.init_app(app)
 
